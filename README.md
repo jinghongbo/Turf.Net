@@ -1,9 +1,4 @@
-# Turf Port to .Net
-
-## Install with NuGet package manager
-### Stable [![NuGet Status](http://img.shields.io/nuget/v/Turf.Net.svg?style=flat)](http://www.nuget.org/packages/Turf.Net/)
-Stable releases are hosted on the default NuGet feed. You can install them using the following command on the package manager command line
-
+# Turf.Net [![NuGet Status](http://img.shields.io/nuget/v/Turf.Net.svg?style=flat)](http://www.nuget.org/packages/Turf.Net/)
 ## Measurement
 - [ ] along
 - [ ] area
