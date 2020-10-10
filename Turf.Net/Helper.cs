@@ -11,7 +11,7 @@ namespace Turf.Net
 
     public static partial class Turf
     {
-        public static GeometryFactory GeometryFactory { get; } = NtsGeometryServices.Instance.CreateGeometryFactory(4326);
+        private static GeometryFactory GeometryFactory = NtsGeometryServices.Instance.CreateGeometryFactory(4326);
         public static FeatureCollection FeatureCollection(Feature[] features, Envelope bbox = null, object id = null)
         {
             var collection = new FeatureCollection() { BoundingBox = bbox };
@@ -51,7 +51,7 @@ namespace Turf.Net
         {
             return new Feature()
             {
-                Geometry = GeometryFactory.CreateMultiLineString(coordinates.Select(x => GeometryFactory.CreateLineString(x)).ToArray()),
+                Geometry = GeometryFactory.CreateMultiLineString(coordinates.Select(c => GeometryFactory.CreateLineString(c)).ToArray()),
                 Attributes = properties,
                 BoundingBox = bbox
             };

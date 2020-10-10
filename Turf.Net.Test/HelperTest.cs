@@ -2,20 +2,18 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NetTopologySuite.Features;
 using NetTopologySuite.Geometries;
 using System.Linq;
-using System.Reflection.PortableExecutable;
-using static Turf.Net.Test.RandomHelper;
 
 namespace Turf.Net.Test
 {
     [TestClass]
-    public class Helper
+    public class HelperTest
     {
         [TestMethod]
         public void FeatureCollection()
         {
-            var locationA = Turf.Point(RandomCoordinate(), new AttributesTable { { "name", "Location A" } });
-            var locationB = Turf.Point(RandomCoordinate(), new AttributesTable { { "name", "Location B" } });
-            var locationC = Turf.Point(RandomCoordinate(), new AttributesTable { { "name", "Location C" } });
+            var locationA = Turf.RandomPoint();
+            var locationB = Turf.RandomPoint();
+            var locationC = Turf.RandomPoint();
             var collection = Turf.FeatureCollection(new[] {
               locationA,
               locationB,
@@ -32,7 +30,7 @@ namespace Turf.Net.Test
         [TestMethod]
         public void Feature()
         {
-            var geometry = Turf.GeometryFactory.CreatePoint(RandomCoordinate());
+            var geometry = Turf.RandomPoint().Geometry;
             var feature = Turf.Feature(geometry);
 
             Assert.IsNotNull(feature);
@@ -42,8 +40,9 @@ namespace Turf.Net.Test
         [TestMethod]
         public void GeometryCollection()
         {
-            var pt = Turf.GeometryFactory.CreatePoint(RandomCoordinate());
-            var line = Turf.GeometryFactory.CreateLineString(RandomCoordinates());
+
+            var pt = Turf.RandomPoint().Geometry;
+            var line = Turf.RandomLineString().Geometry;
             var collection = Turf.GeometryCollection(new Geometry[] { pt, line });
 
             Assert.IsNotNull(collection);
@@ -54,10 +53,10 @@ namespace Turf.Net.Test
         [TestMethod]
         public void LineString()
         {
-            var lineString1 = Turf.LineString(RandomCoordinates(), new AttributesTable { { "name", "line 1" } });
+            var lineString1 = Turf.LineString(Turf.RandomLineString().Geometry.Coordinates, new AttributesTable { { "name", "line 1" } }); ;
 
 
-            var lineString2 = Turf.LineString(RandomCoordinates(), new AttributesTable { { "name", "line 2" } });
+            var lineString2 = Turf.LineString(Turf.RandomLineString().Geometry.Coordinates, new AttributesTable { { "name", "line 2" } });
 
             Assert.IsNotNull(lineString1);
             Assert.IsNotNull(lineString2);
@@ -69,7 +68,7 @@ namespace Turf.Net.Test
         [TestMethod]
         public void MultiLineString()
         {
-            var multiLineString = Turf.MultiLineString(new Coordinate[][] { RandomCoordinates(), RandomCoordinates() });
+            var multiLineString = Turf.MultiLineString(Turf.RandomLineString(2).Select(x => x.Geometry.Coordinates).ToArray());
 
             Assert.IsNotNull(multiLineString);
             Assert.AreEqual(multiLineString.Geometry.OgcGeometryType, OgcGeometryType.MultiLineString);
@@ -79,14 +78,14 @@ namespace Turf.Net.Test
         [TestMethod]
         public void MultiPoint()
         {
-            var multiPt = Turf.MultiPoint(RandomCoordinates());
+            var multiPt = Turf.MultiPoint(Turf.RandomPoint(2).Select(x => x.Geometry.Coordinate).ToArray());
             Assert.IsNotNull(multiPt);
             Assert.AreEqual(multiPt.Geometry.OgcGeometryType, OgcGeometryType.MultiPoint);
         }
         [TestMethod]
         public void MultiPolygon()
         {
-            var multiPoly = Turf.MultiPolygon(new Coordinate[][] { RandomCoordinates(true), RandomCoordinates(true) });
+            var multiPoly = Turf.MultiPolygon(Turf.RandomPolygon(2).Select(x => x.Geometry.Coordinates).ToArray());
             Assert.IsNotNull(multiPoly);
             Assert.AreEqual(multiPoly.Geometry.OgcGeometryType, OgcGeometryType.MultiPolygon);
         }
@@ -94,14 +93,14 @@ namespace Turf.Net.Test
 
         public void Point()
         {
-            var pt = Turf.Point(RandomCoordinate());
+            var pt = Turf.Point(Turf.RandomPosition());
             Assert.IsNotNull(pt);
             Assert.AreEqual(pt.Geometry.OgcGeometryType, OgcGeometryType.Point);
         }
         [TestMethod]
         public void Polygon()
         {
-            var poly = Turf.Polygon(RandomCoordinates(true));
+            var poly = Turf.Polygon(Turf.RandomPolygon().Geometry.Coordinates);
             Assert.IsNotNull(poly);
             Assert.AreEqual(poly.Geometry.OgcGeometryType, OgcGeometryType.Polygon);
         }

@@ -79,10 +79,10 @@
 - [x] point
 - [x] polygon
 ## Random
-- [ ] randomPosition
-- [ ] randomPoint
-- [ ] randomLineString
-- [ ] randomPolygon
+- [x] randomPosition
+- [x] randomPoint
+- [x] randomLineString
+- [x] randomPolygon
 ## Data
 - [ ] sample
 ## Interpolation
