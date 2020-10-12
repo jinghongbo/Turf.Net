@@ -103,22 +103,22 @@ namespace Turf.Net
 
         public static Feature Destination(Coordinate origin, double distance, double bearing, string units = "kilometers", AttributesTable properties = null)
         {
-            var degrees2radians = Math.PI / 180;
-            var radians2degrees = 180 / Math.PI;
-            var coordinates1 = Turf.GetCoord(from);
-            var longitude1 = degrees2radians * coordinates1[0];
-            var latitude1 = degrees2radians * coordinates1[1];
-            var bearing_rad = degrees2radians * bearing;
+            //var degrees2radians = Math.PI / 180;
+            //var radians2degrees = 180 / Math.PI;
+            //var coordinates1 = Turf.get(from);
+            //var longitude1 = degrees2radians * coordinates1[0];
+            //var latitude1 = degrees2radians * coordinates1[1];
+            //var bearing_rad = degrees2radians * bearing;
 
-            var radians = Turf.DistanceToRadians(distance, units);
+            //var radians = Turf.LengthToRadians(distance, units);
 
-            var latitude2 = Math.Asin(Math.Sin(latitude1) * Math.Cos(radians) +
-                Math.Cos(latitude1) * Math.Sin(radians) * Math.Cos(bearing_rad));
-            var longitude2 = longitude1 + Math.Atan2(Math.Sin(bearing_rad) *
-                Math.Sin(radians) * Math.Cos(latitude1),
-                Math.Cos(radians) - Math.Sin(latitude1) * Math.Sin(latitude2));
+            //var latitude2 = Math.Asin(Math.Sin(latitude1) * Math.Cos(radians) +
+            //    Math.Cos(latitude1) * Math.Sin(radians) * Math.Cos(bearing_rad));
+            //var longitude2 = longitude1 + Math.Atan2(Math.Sin(bearing_rad) *
+            //    Math.Sin(radians) * Math.Cos(latitude1),
+            //    Math.Cos(radians) - Math.Sin(latitude1) * Math.Sin(latitude2));
 
-            return Turf.Point(new double[] { radians2degrees * longitude2, radians2degrees * latitude2 });
+            //return Turf.Point(new double[] { radians2degrees * longitude2, radians2degrees * latitude2 });
             throw new NotImplementedException();
         }
 

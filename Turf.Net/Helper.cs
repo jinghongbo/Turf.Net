@@ -10,52 +10,10 @@ namespace Turf.Net
 {
     public static partial class Turf
     {
-        public class Coordinates
+        public class AllGeoJson : Union<Feature, FeatureCollection, Geometry, GeometryCollection>
         {
-            internal Coordinate A1 { get; set; }
-            internal Coordinate[] A2 { get; set; }
-            internal Coordinate[][] A3 { get; set; }
-            internal Coordinate[][][] A4 { get; set; }
 
-
-
-            public static implicit operator Coordinates(Coordinate coordinates)
-            {
-                return new Coordinates() { A1 = coordinates };
-            }
-
-
-            public static implicit operator Coordinates(Coordinate[] coordinates)
-            {
-                return new Coordinates() { A2 = coordinates };
-            }
-            public static implicit operator Coordinates(Coordinate[][] coordinates)
-            {
-                return new Coordinates() { A3 = coordinates };
-            }
-            public static implicit operator Coordinates(Coordinate[][][] coordinates)
-            {
-                return new Coordinates() { A4 = coordinates };
-            }
-
-            public static implicit operator Coordinate(Coordinates coordinates)
-            {
-                return coordinates.A1;
-            }
-            public static implicit operator Coordinate[](Coordinates coordinates)
-            {
-                return coordinates.A2;
-            }
-            public static implicit operator Coordinate[][](Coordinates coordinates)
-            {
-                return coordinates.A3;
-            }
-            public static implicit operator Coordinate[][][](Coordinates coordinates)
-            {
-                return coordinates.A4;
-            }
         }
-
         private static GeometryFactory GeometryFactory = NtsGeometryServices.Instance.CreateGeometryFactory(4326);
 
         public static readonly double EarthRadius = 6371008.8;
@@ -113,7 +71,7 @@ namespace Turf.Net
             return feat;
         }
 
-        public static Geometry Geometry(string type, Coordinates coordinates)
+        public static Geometry Geometry(string type, Union<Coordinate, Coordinate[], Coordinate[][], Coordinate[][][]> coordinates)
         {
             switch (type)
             {
@@ -127,7 +85,7 @@ namespace Turf.Net
 
             }
         }
-        public static Feature GeometryCollection(Geometry[] geometries, AttributesTable properties = null, Envelope bbox = null, object id = null)
+        public static Feature GeometryCollection(Geometry[] geometries, AttributesTable properties = null, Envelope bbox = null)
         {
             var geom = GeometryFactory.CreateGeometryCollection(geometries);
             return Feature(geom, properties, bbox);

@@ -2,30 +2,68 @@
 using NetTopologySuite.Geometries;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace Turf.Net
 {
     public static partial class Turf
     {
-        public static Coordinate[] CoordAll(FeatureCollection features)
+        public static Coordinate[] CoordAll(AllGeoJson features)
         {
-            return features.SelectMany(x => x.Geometry.Coordinates).ToArray();
+            var coords = new List<Coordinate>();
+            CoordEach(features, (currentCoord, coordIndex, featureIndex, multiFeatureIndex, geometryIndex) =>
+            {
+                coords.Add(currentCoord);
+                return true;
+            });
+
+            return coords.ToArray();
         }
 
-        public static void CoordEach(FeatureCollection features, Action<Coordinate, int, Feature, int> callback)
+        public static void CoordEach(Union<Feature, FeatureCollection, Geometry, GeometryCollection> geo, Func<Coordinate, int, int, int, int, bool> callback)
         {
-            for (int featureIndex = 0; featureIndex < features.Count; featureIndex++)
+            int featureIndex = 0, multiFeatureIndex = 0, geometryIndex = 0;
+            int coordIndex;
+            switch (geo.Value)
             {
-                var currentFeature = (Feature)features[featureIndex];
-                for (int coordIndex = 0; coordIndex < currentFeature.Geometry.Coordinates.Length; coordIndex++)
-                {
-                    var currentCoord = currentFeature.Geometry.Coordinates[coordIndex];
+                case FeatureCollection features:
+                    for (featureIndex = 0; featureIndex < features.Count; featureIndex++)
+                    {
+                        for (coordIndex = 0; coordIndex < features[featureIndex].Geometry.Coordinates.Length; coordIndex++)
+                        {
+                            var currentCoord = features[featureIndex].Geometry.Coordinates[coordIndex];
+                            if (!callback(currentCoord, coordIndex, featureIndex, multiFeatureIndex, geometryIndex)) break;
+                        }
+                    }
+                    break;
+                case Feature feature:
+                    for (coordIndex = 0; coordIndex < feature.Geometry.Coordinates.Length; coordIndex++)
+                    {
+                        var currentCoord = feature.Geometry.Coordinates[coordIndex];
+                        if (!callback(currentCoord, coordIndex, featureIndex, multiFeatureIndex, geometryIndex)) break;
+                    }
+                    break;
+                case GeometryCollection geometries:
 
-                    callback(currentCoord, coordIndex, currentFeature, featureIndex);
-                }
+                    for (geometryIndex = 0; geometryIndex < geometries.Count; geometryIndex++)
+                    {
+                        for (coordIndex = 0; coordIndex < geometries[geometryIndex].Coordinates.Length; coordIndex++)
+                        {
+                            var currentCoord = geometries[geometryIndex].Coordinates[coordIndex];
+                            if (!callback(currentCoord, coordIndex, featureIndex, multiFeatureIndex, geometryIndex)) break;
+                        }
+                    }
+
+                    break;
+                case Geometry geometry:
+                    for (coordIndex = 0; coordIndex < geometry.Coordinates.Length; coordIndex++)
+                    {
+                        var currentCoord = geometry.Coordinates[coordIndex];
+                        if (!callback(currentCoord, coordIndex, featureIndex, multiFeatureIndex, geometryIndex)) break;
+                    }
+                    break;
+                    throw new Exception("类型错误");
             }
         }
+
     }
 }
