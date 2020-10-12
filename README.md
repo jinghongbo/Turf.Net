@@ -143,13 +143,13 @@
 - [ ] booleanPointOnLine
 - [ ] booleanWithin
 ## Unit Conversion
-- [ ] bearingToAzimuth
-- [ ] convertArea
-- [ ] convertLength
-- [ ] degreesToRadians
-- [ ] lengthToRadians
-- [ ] lengthToDegrees
-- [ ] radiansToLength
-- [ ] radiansToDegrees
+- [x] bearingToAzimuth
+- [x] convertArea
+- [x] convertLength
+- [x] degreesToRadians
+- [x] lengthToRadians
+- [x] lengthToDegrees
+- [x] radiansToLength
+- [x] radiansToDegrees
 - [ ] toMercator
 - [ ] toWgs84

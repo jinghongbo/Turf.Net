@@ -10,7 +10,28 @@ namespace Turf.Net
     {
         public static Feature Along(Feature line, double distance, string units = "kilometers")
         {
-            throw new NotImplementedException();
+            var coords = line.Geometry.Coordinates;
+            var travelled = 0d;
+            for (var i = 0; i < coords.Length; i++)
+            {
+                if (distance >= travelled && i == coords.Length - 1) break;
+                else if (travelled >= distance)
+                {
+                    var overshot = distance - travelled;
+                    if (overshot != 0) return Point(coords[i]);
+                    else
+                    {
+                        var direction = Bearing(coords[i], coords[i - 1]) - 180;
+                        var interpolated = Destination(coords[i], overshot, direction, units);
+                        return interpolated;
+                    }
+                }
+                else
+                {
+                    travelled += Distance(coords[i], coords[i + 1], units);
+                }
+            }
+            return Point(coords[coords.Length - 1]);
         }
 
         public static double Area(Feature feature)
@@ -39,7 +60,20 @@ namespace Turf.Net
 
         public static double Bearing(Coordinate start, Coordinate end, bool final = false)
         {
-            throw new NotImplementedException();
+            var degrees2radians = Math.PI / 180;
+            var radians2degrees = 180 / Math.PI;
+
+            var lon1 = degrees2radians * start[0];
+            var lon2 = degrees2radians * end[0];
+            var lat1 = degrees2radians * start[1];
+            var lat2 = degrees2radians * end[1];
+            var a = Math.Sin(lon2 - lon1) * Math.Cos(lat2);
+            var b = Math.Cos(lat1) * Math.Sin(lat2) -
+                Math.Sin(lat1) * Math.Cos(lat2) * Math.Cos(lon2 - lon1);
+
+            var bearing = radians2degrees * Math.Atan2(a, b);
+
+            return bearing;
         }
 
         public static Feature Center(Feature feature, AttributesTable properties = null)
@@ -69,6 +103,22 @@ namespace Turf.Net
 
         public static Feature Destination(Coordinate origin, double distance, double bearing, string units = "kilometers", AttributesTable properties = null)
         {
+            var degrees2radians = Math.PI / 180;
+            var radians2degrees = 180 / Math.PI;
+            var coordinates1 = Turf.GetCoord(from);
+            var longitude1 = degrees2radians * coordinates1[0];
+            var latitude1 = degrees2radians * coordinates1[1];
+            var bearing_rad = degrees2radians * bearing;
+
+            var radians = Turf.DistanceToRadians(distance, units);
+
+            var latitude2 = Math.Asin(Math.Sin(latitude1) * Math.Cos(radians) +
+                Math.Cos(latitude1) * Math.Sin(radians) * Math.Cos(bearing_rad));
+            var longitude2 = longitude1 + Math.Atan2(Math.Sin(bearing_rad) *
+                Math.Sin(radians) * Math.Cos(latitude1),
+                Math.Cos(radians) - Math.Sin(latitude1) * Math.Sin(latitude2));
+
+            return Turf.Point(new double[] { radians2degrees * longitude2, radians2degrees * latitude2 });
             throw new NotImplementedException();
         }
 

@@ -3,6 +3,7 @@ using Turf.Net;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using NetTopologySuite.Geometries;
 
 namespace Turf.Net.Test
 {
