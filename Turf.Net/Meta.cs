@@ -7,7 +7,7 @@ namespace Turf.Net
 {
     public static partial class Turf
     {
-        public static Coordinate[] CoordAll(AllGeoJson features)
+        public static Coordinate[] CoordAll(AllGeometry features)
         {
             var coords = new List<Coordinate>();
             CoordEach(features, (currentCoord, coordIndex, featureIndex, multiFeatureIndex, geometryIndex) =>

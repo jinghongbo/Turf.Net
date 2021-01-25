@@ -35,7 +35,7 @@ namespace Turf.Net
 
     public class Union<T1, T2, T3, T4>
     {
-        public dynamic Value { get; private set; }
+        public object Value { get; private set; }
         public static implicit operator Union<T1, T2, T3, T4>(T1 value) => new Union<T1, T2, T3, T4>() { Value = value };
         public static implicit operator Union<T1, T2, T3, T4>(T2 value) => new Union<T1, T2, T3, T4>() { Value = value };
         public static implicit operator Union<T1, T2, T3, T4>(T3 value) => new Union<T1, T2, T3, T4>() { Value = value };

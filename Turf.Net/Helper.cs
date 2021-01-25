@@ -10,7 +10,7 @@ namespace Turf.Net
 {
     public static partial class Turf
     {
-        public class AllGeoJson : Union<Feature, FeatureCollection, Geometry, GeometryCollection>
+        public class AllGeometry : Union<Feature, FeatureCollection, Geometry, GeometryCollection>
         {
 
         }

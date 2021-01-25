@@ -121,11 +121,31 @@ namespace Turf.Net
             //return Turf.Point(new double[] { radians2degrees * longitude2, radians2degrees * latitude2 });
             throw new NotImplementedException();
         }
-
+        /// <summary>
+        /// 计算距离
+        /// </summary>
+        /// <param name="from"></param>
+        /// <param name="to"></param>
+        /// <param name="units"></param>
+        /// <returns></returns>
         public static double Distance(Coordinate from, Coordinate to, string units = "kilometers")
         {
+            var dLat = DegreesToRadians(to[1] - from[1]);
+            var dLon = DegreesToRadians(to[0] - from[0]);
+            var lat1 = DegreesToRadians(from[1]);
+            var lat2 = DegreesToRadians(to[1]);
+
+            var a =
+              Math.Pow(Math.Sin(dLat / 2), 2) +
+              Math.Pow(Math.Sin(dLon / 2), 2) * Math.Cos(lat1) * Math.Cos(lat2);
+
+            return RadiansToLength(
+              2 * Math.Atan2(Math.Sqrt(a), Math.Sqrt(1 - a)),
+              units
+            );
             throw new NotImplementedException();
         }
+
 
         public static Feature Envelope(FeatureCollection features)
         {

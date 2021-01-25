@@ -9,7 +9,7 @@
 - [ ] centerOfMass
 - [ ] centroid
 - [ ] destination
-- [ ] distance
+- [x] distance
 - [ ] envelope
 - [ ] length
 - [ ] midpoint
