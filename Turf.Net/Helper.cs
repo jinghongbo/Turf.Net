@@ -1,198 +1,113 @@
-﻿using NetTopologySuite;
-using NetTopologySuite.Features;
-using NetTopologySuite.Geometries;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace Turf.Net
 {
     public static partial class Turf
     {
-        public class AllGeometry : Union<Feature, FeatureCollection, Geometry, GeometryCollection>
+
+        public static double EarthRadius = 6371008.8;
+
+        public static Dictionary<Units, double> Factors = new Dictionary<Units, double>()
         {
-
-        }
-        private static GeometryFactory GeometryFactory = NtsGeometryServices.Instance.CreateGeometryFactory(4326);
-
-        public static readonly double EarthRadius = 6371008.8;
-
-        public static readonly Dictionary<string, double> Factors = new Dictionary<string, double>()
-        {
-            {"centimeters", EarthRadius * 100},
-            {"centimetres", EarthRadius * 100},
-            {"degrees", EarthRadius / 111325},
-            {"feet", EarthRadius * 3.28084},
-            {"inches", EarthRadius * 39.370},
-            {"kilometers", EarthRadius / 1000},
-            {"kilometres", EarthRadius / 1000},
-            {"meters", EarthRadius},
-            {"metres", EarthRadius},
-            {"miles", EarthRadius / 1609.344},
-            {"millimeters", EarthRadius * 1000},
-            {"millimetres", EarthRadius * 1000},
-            {"nauticalmiles", EarthRadius / 1852},
-            {"radians", 1},
-            {"yards", EarthRadius / 1.0936},
+            { Units.Centimeters, EarthRadius * 100},
+            { Units.Degrees, EarthRadius / 111325},
+            { Units.Feet, EarthRadius * 3.28084},
+            { Units.Inches, EarthRadius * 39.37},
+            { Units.Kilometers, EarthRadius / 1000},
+            { Units.Meters, EarthRadius},
+            { Units.Miles, EarthRadius / 1609.344},
+            { Units.Millimeters, EarthRadius * 1000},
+            { Units.Nauticalmiles, EarthRadius / 1852},
+            { Units.Radians, 1},
+            { Units.Yards, EarthRadius / 1.0936},
         };
 
-        public static readonly Dictionary<string, double> AreaFactors = new Dictionary<string, double>() {
-           {"acres", 0.000247105},
-           {"centimeters", 10000},
-           {"centimetres", 10000},
-           {"feet", 10.763910417},
-           {"inches", 1550.003100006},
-           {"kilometers", 0.000001},
-           {"kilometres", 0.000001},
-           {"meters", 1},
-           {"metres", 1},
-           {"miles", 3.86e-7},
-           {"millimeters", 1000000},
-           {"millimetres", 1000000},
-            { "yards", 1.195990046},
+
+        public static Dictionary<Units, double> UnitsFactors = new Dictionary<Units, double>()
+        {
+            { Units.Centimeters, 100},
+            { Units.Degrees, 1 / 111325},
+            { Units.Feet, 3.28084},
+            { Units.Inches, 39.37},
+            { Units.Kilometers, 1 / 1000},
+            { Units.Meters, 1},
+            { Units.Miles, 1 / 1609.344},
+            { Units.Millimeters, 1000},
+            { Units.Nauticalmiles, 1 / 1852},
+            { Units.Radians, 1 / EarthRadius},
+            { Units.Yards, 1 / 1.0936},
+
         };
 
-        public static FeatureCollection FeatureCollection(Feature[] features, Envelope bbox = null, object id = null)
+
+        public static Dictionary<Units, double> AreaFactors = new Dictionary<Units, double>()
         {
-            var fc = new FeatureCollection() { BoundingBox = bbox };
-            foreach (var feature in features)
-            {
-                fc.Add(feature);
-            }
-            return fc;
-        }
-        public static Feature Feature(Geometry geom, AttributesTable properties = null, Envelope bbox = null)
+             {Units.Acres, 0.000247105},
+             {Units.Centimeters, 10000},
+             {Units.Feet, 10.763910417},
+             {Units.Hectares, 0.0001},
+             {Units.Inches, 1550.003100006},
+             {Units.Kilometers, 0.000001},
+             {Units.Meters, 1},
+             {Units.Miles, 3.86e-7},
+             {Units.Millimeters, 1000000},
+             {Units.Yards, 1.195990046},
+
+        };
+        public static double Round(double number, int precision = 0)
         {
-            var feat = new Feature();
-            if (bbox != null) { feat.BoundingBox = bbox; }
-            feat.Attributes = properties ?? new AttributesTable();
-            feat.Geometry = geom;
-            return feat;
+            return Math.Round(number, precision);
         }
 
-        public static Geometry Geometry(string type, Union<Coordinate, Coordinate[], Coordinate[][], Coordinate[][][]> coordinates)
+        public static double RadiansToLength(double radians, Units units = Units.Kilometers)
         {
-            switch (type)
-            {
-                case "Point": return Point(coordinates).Geometry;
-                case "LineString": return LineString(coordinates).Geometry;
-                case "Polygon": return Polygon(coordinates).Geometry;
-                case "MultiPoint": return MultiPoint(coordinates).Geometry;
-                case "MultiLineString": return MultiLineString(coordinates).Geometry;
-                case "MultiPolygon": return MultiPolygon(coordinates).Geometry;
-                default: throw new Exception(type + " is ivalid");
-
-            }
-        }
-        public static Feature GeometryCollection(Geometry[] geometries, AttributesTable properties = null, Envelope bbox = null)
-        {
-            var geom = GeometryFactory.CreateGeometryCollection(geometries);
-            return Feature(geom, properties, bbox);
+            return radians * Factors[units];
         }
 
-        public static Feature LineString(Coordinate[] coordinates, AttributesTable properties = null, Envelope bbox = null)
+        public static double LengthToRadians(double length, Units units = Units.Kilometers)
         {
-            var geom = GeometryFactory.CreateLineString(coordinates);
-            return Feature(geom, properties, bbox);
+            return length / Factors[units];
         }
 
-        public static FeatureCollection LineStrings(Coordinate[][] coordinates, AttributesTable properties = null, Envelope bbox = null)
+        public static double LengthToDegrees(double length, Units units = Units.Kilometers)
         {
-            return FeatureCollection(coordinates.Select(x => LineString(x, properties, bbox)).ToArray());
+            return RadiansToDegrees(LengthToRadians(length, units));
         }
-        public static Feature MultiLineString(Coordinate[][] coordinates, AttributesTable properties = null, Envelope bbox = null)
-        {
-            var geom = GeometryFactory.CreateMultiLineString(coordinates.Select(c => GeometryFactory.CreateLineString(c)).ToArray());
-            return Feature(geom, properties, bbox);
-        }
-
-        public static Feature MultiPoint(Coordinate[] coordinates, AttributesTable properties = null, Envelope bbox = null)
-        {
-            var geom = GeometryFactory.CreateMultiPoint(coordinates.Select(x => GeometryFactory.CreatePoint(x)).ToArray());
-            return Feature(geom, properties, bbox);
-        }
-        public static Feature MultiPolygon(Coordinate[][] coordinates, AttributesTable properties = null, Envelope bbox = null)
-        {
-            var geom = GeometryFactory.CreateMultiPolygon(coordinates.Select(x => GeometryFactory.CreatePolygon(x)).ToArray());
-            return Feature(geom, properties, bbox);
-        }
-        public static Feature Point(Coordinate coordinates, AttributesTable properties = null, Envelope bbox = null)
-        {
-            var geom = GeometryFactory.CreatePoint(coordinates);
-            return Feature(geom, properties, bbox);
-        }
-
-        public static FeatureCollection Points(Coordinate[] coordinates, AttributesTable properties = null, Envelope bbox = null)
-        {
-            return FeatureCollection(coordinates.Select(x => Point(x, properties, bbox)).ToArray());
-        }
-        public static Feature Polygon(Coordinate[] coordinates, AttributesTable properties = null, Envelope bbox = null)
-        {
-            var geom = GeometryFactory.CreatePolygon(coordinates);
-            return Feature(geom, properties, bbox);
-        }
-        public static FeatureCollection Polygons(Coordinate[][] coordinates, AttributesTable properties = null, Envelope bbox = null)
-        {
-            return FeatureCollection(coordinates.Select(x => Polygon(x, properties, bbox)).ToArray());
-        }
-
-        public static double Round(double num, int precision = 0)
-        {
-            return Math.Round(num, precision);
-        }
-
-        public static double RadiansToLength(double radians, string units = "kilometers")
-        {
-            if (!Factors.ContainsKey(units)) { throw new Exception(units + " units is invalid"); }
-            var factor = Factors[units];
-            return radians * factor;
-        }
-        public static double LengthToRadians(double distance, string units = "kilometers")
-        {
-            if (!Factors.ContainsKey(units)) { throw new Exception(units + " units is invalid"); }
-            var factor = Factors[units];
-            return distance / factor;
-        }
-        public static double LengthToDegrees(double distance, string units = "kilometers")
-        {
-            return RadiansToDegrees(LengthToRadians(distance, units));
-        }
-
         public static double BearingToAzimuth(double bearing)
         {
             var angle = bearing % 360;
-            if (angle < 0) { angle += 360; }
+            if (angle < 0)
+            {
+                angle += 360;
+            }
             return angle;
         }
+
         public static double RadiansToDegrees(double radians)
         {
             var degrees = radians % (2 * Math.PI);
-            return degrees * 180 / Math.PI;
+            return (degrees * 180) / Math.PI;
+
         }
 
         public static double DegreesToRadians(double degrees)
         {
             var radians = degrees % 360;
-            return radians * Math.PI / 180;
+            return (radians * Math.PI) / 180;
         }
 
-        public static double ConvertLength(double length, string originalUnit = "kilometers", string finalUnit = "kilometers")
+        public static double ConvertLength(double length, Units originalUnits, Units finalUnits)
         {
-            if (!(length >= 0)) { throw new Exception("length must be a positive number"); }
-            return RadiansToLength(LengthToRadians(length, originalUnit), finalUnit);
+            return RadiansToLength(LengthToRadians(length, originalUnits), finalUnits);
         }
-        public static double ConvertArea(double area, string originalUnit = "kilometers", string finalUnit = "kilometers")
+
+        public static double ConvertArea(double area, Units originalUnits, Units finalUnits)
         {
-            if (!AreaFactors.ContainsKey(originalUnit)) { throw new Exception("invalid original units"); }
-
-            var startFactor = AreaFactors[originalUnit];
-            if (!AreaFactors.ContainsKey(finalUnit)) { throw new Exception("invalid final units"); }
-            var finalFactor = AreaFactors[finalUnit];
-
+            var startFactor = AreaFactors[originalUnits];
+            var finalFactor = AreaFactors[finalUnits];
             return (area / startFactor) * finalFactor;
         }
-
     }
 
 }

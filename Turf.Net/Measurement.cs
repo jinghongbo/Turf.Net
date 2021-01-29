@@ -1,202 +1,110 @@
-﻿using NetTopologySuite.Features;
-using NetTopologySuite.Geometries;
+﻿using NetTopologySuite.Geometries;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Turf.Net
 {
     public static partial class Turf
     {
-        public static Feature Along(Feature line, double distance, string units = "kilometers")
-        {
-            var coords = line.Geometry.Coordinates;
-            var travelled = 0d;
-            for (var i = 0; i < coords.Length; i++)
-            {
-                if (distance >= travelled && i == coords.Length - 1) break;
-                else if (travelled >= distance)
-                {
-                    var overshot = distance - travelled;
-                    if (overshot != 0) return Point(coords[i]);
-                    else
-                    {
-                        var direction = Bearing(coords[i], coords[i - 1]) - 180;
-                        var interpolated = Destination(coords[i], overshot, direction, units);
-                        return interpolated;
-                    }
-                }
-                else
-                {
-                    travelled += Distance(coords[i], coords[i + 1], units);
-                }
-            }
-            return Point(coords[coords.Length - 1]);
-        }
-
-        public static double Area(Feature feature)
+        public static Point Along(LineString line, double distance, Units units = Units.Kilometers)
         {
             throw new NotImplementedException();
         }
-        public static double Area(FeatureCollection features)
+        public static double Area(Geometry geometry)
         {
             throw new NotImplementedException();
         }
-
-        public static Envelope Bbox(Feature feature)
+        public static Envelope Bbox(Geometry geometry)
         {
             throw new NotImplementedException();
         }
-        public static Envelope Bbox(FeatureCollection features)
-        {
-            throw new NotImplementedException();
-        }
-
-        public static Feature BboxPolygon(Envelope bbox, AttributesTable properties = null, object id = null)
+        public static Polygon BboxPolygon(Envelope bbox)
         {
             throw new NotImplementedException();
 
         }
-
-        public static double Bearing(Coordinate start, Coordinate end, bool final = false)
-        {
-            var degrees2radians = Math.PI / 180;
-            var radians2degrees = 180 / Math.PI;
-
-            var lon1 = degrees2radians * start[0];
-            var lon2 = degrees2radians * end[0];
-            var lat1 = degrees2radians * start[1];
-            var lat2 = degrees2radians * end[1];
-            var a = Math.Sin(lon2 - lon1) * Math.Cos(lat2);
-            var b = Math.Cos(lat1) * Math.Sin(lat2) -
-                Math.Sin(lat1) * Math.Cos(lat2) * Math.Cos(lon2 - lon1);
-
-            var bearing = radians2degrees * Math.Atan2(a, b);
-
-            return bearing;
-        }
-
-        public static Feature Center(Feature feature, AttributesTable properties = null)
+        public static double Bearing(Point start, Point end, bool final = false)
         {
             throw new NotImplementedException();
         }
-        public static Feature Center(FeatureCollection features, AttributesTable properties = null)
+        public static Point Center(Geometry geometry)
         {
             throw new NotImplementedException();
         }
-        public static Feature CenterOfMass(Feature feature, AttributesTable properties = null)
+        public static Point CenterOfMass(Geometry geometry)
         {
             throw new NotImplementedException();
         }
-        public static Feature CenterOfMass(FeatureCollection features, AttributesTable properties = null)
+        public static Point Centroid(Geometry geometry)
         {
             throw new NotImplementedException();
         }
-        public static Feature Centroid(Feature feature, AttributesTable properties = null)
+        public static Point Destination(Point origin, double distance, double bearing, Units units = Units.Kilometers)
         {
             throw new NotImplementedException();
         }
-        public static Feature Centroid(FeatureCollection features, AttributesTable properties = null)
+        public static double Distance(Point from, Point to, Units units = Units.Kilometers)
         {
-            throw new NotImplementedException();
-        }
+            //var dLat = DegreesToRadians(to[1] - from[1]);
+            //var dLon = DegreesToRadians(to[0] - from[0]);
+            //var lat1 = DegreesToRadians(from[1]);
+            //var lat2 = DegreesToRadians(to[1]);
 
-        public static Feature Destination(Coordinate origin, double distance, double bearing, string units = "kilometers", AttributesTable properties = null)
-        {
-            //var degrees2radians = Math.PI / 180;
-            //var radians2degrees = 180 / Math.PI;
-            //var coordinates1 = Turf.get(from);
-            //var longitude1 = degrees2radians * coordinates1[0];
-            //var latitude1 = degrees2radians * coordinates1[1];
-            //var bearing_rad = degrees2radians * bearing;
+            //var a =
+            //  Math.Pow(Math.Sin(dLat / 2), 2) +
+            //  Math.Pow(Math.Sin(dLon / 2), 2) * Math.Cos(lat1) * Math.Cos(lat2);
 
-            //var radians = Turf.LengthToRadians(distance, units);
-
-            //var latitude2 = Math.Asin(Math.Sin(latitude1) * Math.Cos(radians) +
-            //    Math.Cos(latitude1) * Math.Sin(radians) * Math.Cos(bearing_rad));
-            //var longitude2 = longitude1 + Math.Atan2(Math.Sin(bearing_rad) *
-            //    Math.Sin(radians) * Math.Cos(latitude1),
-            //    Math.Cos(radians) - Math.Sin(latitude1) * Math.Sin(latitude2));
-
-            //return Turf.Point(new double[] { radians2degrees * longitude2, radians2degrees * latitude2 });
-            throw new NotImplementedException();
-        }
-        /// <summary>
-        /// 计算距离
-        /// </summary>
-        /// <param name="from"></param>
-        /// <param name="to"></param>
-        /// <param name="units"></param>
-        /// <returns></returns>
-        public static double Distance(Coordinate from, Coordinate to, string units = "kilometers")
-        {
-            var dLat = DegreesToRadians(to[1] - from[1]);
-            var dLon = DegreesToRadians(to[0] - from[0]);
-            var lat1 = DegreesToRadians(from[1]);
-            var lat2 = DegreesToRadians(to[1]);
-
-            var a =
-              Math.Pow(Math.Sin(dLat / 2), 2) +
-              Math.Pow(Math.Sin(dLon / 2), 2) * Math.Cos(lat1) * Math.Cos(lat2);
-
-            return RadiansToLength(
-              2 * Math.Atan2(Math.Sqrt(a), Math.Sqrt(1 - a)),
-              units
-            );
-            throw new NotImplementedException();
-        }
-
-
-        public static Feature Envelope(FeatureCollection features)
-        {
-            throw new NotImplementedException();
-        }
-
-        public static double Length(FeatureCollection features, string units = "kilometers")
-        {
-            throw new NotImplementedException();
-        }
-
-        public static Feature Midpoint(Coordinate point1, Coordinate point2)
-        {
-            throw new NotImplementedException();
-        }
-
-        public static Feature PointOnFeature(FeatureCollection features)
-        {
+            //return RadiansToLength(
+            //  2 * Math.Atan2(Math.Sqrt(a), Math.Sqrt(1 - a)),
+            //  units
+            //);
 
             throw new NotImplementedException();
         }
-
-        public static FeatureCollection PolygonTangents(Coordinate pt, Feature polygon)
+        public static Polygon Envelope(Geometry geometry)
         {
             throw new NotImplementedException();
         }
-
-        public static double PointToLineDistance(Coordinate pt, Feature line, string units = "kilometers", bool mercator = false)
+        public static double Length(Geometry geometry, Units units = Units.Kilometers)
         {
             throw new NotImplementedException();
         }
-
-        public static double RhumbBearing(Coordinate start, Coordinate end, bool final = false)
+        public static double Length(GeometryCollection geometries, Units units = Units.Kilometers)
         {
             throw new NotImplementedException();
         }
-
-        public static Feature RhumbDestination(Coordinate origin, double distance, double bearing, string units = "kilometers", AttributesTable properties = null)
+        public static Point Midpoint(Point point1, Point point2)
         {
             throw new NotImplementedException();
         }
-        public static double RhumbDistance(Coordinate from, Coordinate to, string units = "kilometers")
+        public static Point PointOnFeature(Geometry geometry)
         {
             throw new NotImplementedException();
         }
-
+        public static GeometryCollection PolygonTangents(Point point, Polygon polygon)
+        {
+            throw new NotImplementedException();
+        }
+        public static double PointToLineDistance(Point point, LineString line, Units units = Units.Kilometers, bool mercator = false)
+        {
+            throw new NotImplementedException();
+        }
+        public static double RhumbBearing(Point start, Point end, bool final = false)
+        {
+            throw new NotImplementedException();
+        }
+        public static Geometry RhumbDestination(Point origin, double distance, double bearing, Units units = Units.Kilometers)
+        {
+            throw new NotImplementedException();
+        }
+        public static double RhumbDistance(Point from, Point to, string units = "kilometers")
+        {
+            throw new NotImplementedException();
+        }
         public static Envelope Square(Envelope bbox)
         {
             throw new NotImplementedException();
         }
-        public static Feature GreatCircle(Coordinate start, Coordinate end, AttributesTable properties = null, double npoints = 100, double offset = 10)
+        public static Geometry GreatCircle(Point start, Point end, double npoints = 100, double offset = 10)
         {
             throw new NotImplementedException();
         }

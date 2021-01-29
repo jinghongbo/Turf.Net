@@ -1,5 +1,4 @@
-﻿using NetTopologySuite.Features;
-using NetTopologySuite.Geometries;
+﻿using NetTopologySuite.Geometries;
 using System;
 using System.Linq;
 
@@ -7,7 +6,7 @@ namespace Turf.Net
 {
     public static partial class Turf
     {
-        private static Random Random = new Random();
+        private static readonly Random Random = new Random();
 
         private static double RandomDouble(double minValue, double maxValue)
         {
@@ -19,44 +18,25 @@ namespace Turf.Net
             {
                 bbox = new Envelope(-180, 180, -90, 90);
             }
-
-            var x = RandomDouble(bbox.MinX, bbox.MaxX);
-            var y = RandomDouble(bbox.MinY, bbox.MaxX);
+            double x = RandomDouble(bbox.MinX, bbox.MaxX);
+            double y = RandomDouble(bbox.MinY, bbox.MaxX);
             return new Coordinate(x, y);
         }
 
-        public static FeatureCollection RandomPoint(int count, Envelope bbox = null)
+        public static Point[] RandomPoint(int count, Envelope bbox = null)
         {
-            return FeatureCollection(Enumerable.Range(0, count).Select(_ => RandomPoint(bbox)).ToArray());
-        }
-        public static Feature RandomPoint(Envelope bbox = null)
-        {
-            return Point(RandomPosition(bbox));
+            return Enumerable.Range(0, count).Select(_ => new Point(RandomPosition(bbox))).ToArray();
         }
 
-
-
-        public static FeatureCollection RandomLineString(int count, Envelope bbox = null, int numVertices = 10, double maxLength = 0.0001, double maxRotation = Math.PI / 8)
+        public static LineString[] RandomLineString(int count, Envelope bbox = null, int numVertices = 10, double maxLength = 0.0001, double maxRotation = Math.PI / 8)
         {
-            return FeatureCollection(Enumerable.Range(0, count).Select(_ => RandomLineString(bbox, numVertices, maxLength, maxRotation)).ToArray());
-        }
-        public static Feature RandomLineString(Envelope bbox = null, int numVertices = 10, double maxLength = 0.0001, double maxRotation = Math.PI / 8)
-        {
-            return LineString(Enumerable.Range(0, numVertices).Select(_ => RandomPosition(bbox)).ToArray());
+
+            throw new NotImplementedException();
         }
 
-
-        public static FeatureCollection RandomPolygon(int count, Envelope bbox = null, int numVertices = 10, double maxRadialLength = 10)
+        public static Polygon[] RandomPolygon(int count, Envelope bbox = null, int numVertices = 10, double maxRadialLength = 10)
         {
-            return FeatureCollection(Enumerable.Range(0, count)
-                .Select(_ => RandomPolygon(bbox, numVertices, maxRadialLength)).ToArray());
-        }
-
-        public static Feature RandomPolygon(Envelope bbox = null, int numVertices = 10, double maxRadialLength = 10)
-        {
-            var coordinates = Enumerable.Range(0, numVertices).Select(_ => RandomPosition(bbox)).ToList();
-            coordinates.Add(coordinates[0]);
-            return Polygon(coordinates.ToArray());
+            throw new NotImplementedException();
         }
     }
 }
