@@ -1,7 +1,7 @@
 # Turf.Net [![NuGet Status](http://img.shields.io/nuget/v/Turf.Net.svg?style=flat)](http://www.nuget.org/packages/Turf.Net/)
 ## Measurement
-- [ ] along
-- [ ] area
+- [x] along
+- [x] area
 - [ ] bbox
 - [ ] bboxPolygon
 - [ ] bearing
@@ -69,20 +69,20 @@
 - [ ] shortestPath
 - [ ] unkinkPolygon
 ## Helper
-- [x] featureCollection
-- [x] feature
-- [x] geometryCollection
-- [x] lineString
-- [x] multiLineString
-- [x] multiPoint
-- [x] multiPolygon
-- [x] point
-- [x] polygon
+- [ ] featureCollection
+- [ ] feature
+- [ ] geometryCollection
+- [ ] lineString
+- [ ] multiLineString
+- [ ] multiPoint
+- [ ] multiPolygon
+- [ ] point
+- [ ] polygon
 ## Random
 - [x] randomPosition
 - [x] randomPoint
-- [x] randomLineString
-- [x] randomPolygon
+- [ ] randomLineString
+- [ ] randomPolygon
 ## Data
 - [ ] sample
 ## Interpolation
