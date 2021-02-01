@@ -5,6 +5,8 @@ namespace Turf.Net
 {
     public static partial class Turf
     {
+        private const int RADIUS = 6378137;
+
         public static Point Along(LineString line, double distance, Units units = Units.Kilometers)
         {
             var coords = line.Coordinates;
@@ -43,7 +45,13 @@ namespace Turf.Net
         }
         public static double Area(Geometry geometry)
         {
-            throw new NotImplementedException();
+            switch (geometry.OgcGeometryType)
+            {
+                case OgcGeometryType.Polygon:
+                    return PolygonArea((Polygon)geometry);
+                default:
+                    return 0;
+            }
         }
         public static Envelope Bbox(Geometry geometry)
         {
@@ -72,7 +80,27 @@ namespace Turf.Net
         }
         public static Point Destination(Coordinate origin, double distance, double bearing, Units units = Units.Kilometers)
         {
-            throw new NotImplementedException();
+            var coordinates1 = origin;
+            var longitude1 = DegreesToRadians(coordinates1[0]);
+            var latitude1 = DegreesToRadians(coordinates1[1]);
+            var bearingRad = DegreesToRadians(bearing);
+            var radians = LengthToRadians(distance, units);
+
+            // Main
+            var latitude2 = Math.Asin(
+               Math.Sin(latitude1) * Math.Cos(radians) +
+                 Math.Cos(latitude1) * Math.Sin(radians) * Math.Cos(bearingRad)
+             );
+            var longitude2 =
+              longitude1 +
+              Math.Atan2(
+                Math.Sin(bearingRad) * Math.Sin(radians) * Math.Cos(latitude1),
+                Math.Cos(radians) - Math.Sin(latitude1) * Math.Sin(latitude2)
+              );
+            var lng = RadiansToDegrees(longitude2);
+            var lat = RadiansToDegrees(latitude2);
+
+            return new Point(lng, lat);
         }
         public static double Distance(Coordinate from, Coordinate to, Units units = Units.Kilometers)
         {
@@ -142,6 +170,75 @@ namespace Turf.Net
             throw new NotImplementedException();
         }
 
+
+        #region 私有方法
+        private static double PolygonArea(Polygon polygon)
+        {
+            double total = 0;
+            if (polygon.Coordinates != null && polygon.Coordinates.Length > 0)
+            {
+                total += Math.Abs(RingArea(polygon.Coordinates));
+                foreach (LinearRing hole in polygon.Holes)
+                {
+                    total -= Math.Abs(RingArea(hole.Coordinates));
+                }
+            }
+            return total;
+        }
+
+        private static double RingArea(Coordinate[] coords)
+        {
+            Coordinate p1;
+            Coordinate p2;
+            Coordinate p3;
+            int lowerIndex;
+            int middleIndex;
+            int upperIndex;
+            int i;
+            double total = 0;
+            var coordsLength = coords.Length;
+
+            if (coordsLength > 2)
+            {
+                for (i = 0; i < coordsLength; i++)
+                {
+                    if (i == coordsLength - 2)
+                    {
+                        // i = N-2
+                        lowerIndex = coordsLength - 2;
+                        middleIndex = coordsLength - 1;
+                        upperIndex = 0;
+                    }
+                    else if (i == coordsLength - 1)
+                    {
+                        // i = N-1
+                        lowerIndex = coordsLength - 1;
+                        middleIndex = 0;
+                        upperIndex = 1;
+                    }
+                    else
+                    {
+                        // i = 0 to N-3
+                        lowerIndex = i;
+                        middleIndex = i + 1;
+                        upperIndex = i + 2;
+                    }
+                    p1 = coords[lowerIndex];
+                    p2 = coords[middleIndex];
+                    p3 = coords[upperIndex];
+                    total += (Rad(p3[0]) - Rad(p1[0])) * Math.Sin(Rad(p2[1]));
+                }
+
+                total = (total * RADIUS * RADIUS) / 2;
+            }
+            return total;
+        }
+
+        private static double Rad(double num)
+        {
+            return (num * Math.PI) / 180;
+        }
+        #endregion
 
     }
 }
