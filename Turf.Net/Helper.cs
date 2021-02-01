@@ -1,4 +1,5 @@
-﻿using System;
+﻿using NetTopologySuite.Utilities;
+using System;
 using System.Collections.Generic;
 
 namespace Turf.Net
@@ -86,15 +87,13 @@ namespace Turf.Net
 
         public static double RadiansToDegrees(double radians)
         {
-            var degrees = radians % (2 * Math.PI);
-            return (degrees * 180) / Math.PI;
+            return Radians.ToDegrees(radians);
 
         }
 
         public static double DegreesToRadians(double degrees)
         {
-            var radians = degrees % 360;
-            return (radians * Math.PI) / 180;
+            return Degrees.ToRadians(degrees);
         }
 
         public static double ConvertLength(double length, Units originalUnits, Units finalUnits)

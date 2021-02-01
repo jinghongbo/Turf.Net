@@ -7,7 +7,39 @@ namespace Turf.Net
     {
         public static Point Along(LineString line, double distance, Units units = Units.Kilometers)
         {
-            throw new NotImplementedException();
+            var coords = line.Coordinates;
+            var travelled = 0d;
+            for (var i = 0; i < coords.Length; i++)
+            {
+                if (distance >= travelled && i == coords.Length - 1)
+                {
+                    break;
+                }
+                else if (travelled >= distance)
+                {
+                    var overshot = distance - travelled;
+                    if (overshot != 0)
+                    {
+                        return new Point(coords[i]);
+                    }
+                    else
+                    {
+                        var direction = Bearing(coords[i], coords[i - 1]) - 180;
+                        var interpolated = Destination(
+                          coords[i],
+                          overshot,
+                          direction,
+                          units
+                        );
+                        return interpolated;
+                    }
+                }
+                else
+                {
+                    travelled += Distance(coords[i], coords[i + 1], units);
+                }
+            }
+            return new Point(coords[coords.Length - 1]);
         }
         public static double Area(Geometry geometry)
         {
@@ -22,7 +54,7 @@ namespace Turf.Net
             throw new NotImplementedException();
 
         }
-        public static double Bearing(Point start, Point end, bool final = false)
+        public static double Bearing(Coordinate start, Coordinate end, bool final = false)
         {
             throw new NotImplementedException();
         }
@@ -38,27 +70,28 @@ namespace Turf.Net
         {
             throw new NotImplementedException();
         }
-        public static Point Destination(Point origin, double distance, double bearing, Units units = Units.Kilometers)
+        public static Point Destination(Coordinate origin, double distance, double bearing, Units units = Units.Kilometers)
         {
             throw new NotImplementedException();
         }
-        public static double Distance(Point from, Point to, Units units = Units.Kilometers)
+        public static double Distance(Coordinate from, Coordinate to, Units units = Units.Kilometers)
         {
-            //var dLat = DegreesToRadians(to[1] - from[1]);
-            //var dLon = DegreesToRadians(to[0] - from[0]);
-            //var lat1 = DegreesToRadians(from[1]);
-            //var lat2 = DegreesToRadians(to[1]);
+            var coordinates1 = from;
+            var coordinates2 = to;
+            var dLat = DegreesToRadians(coordinates2[1] - coordinates1[1]);
+            var dLon = DegreesToRadians(coordinates2[0] - coordinates1[0]);
+            var lat1 = DegreesToRadians(coordinates1[1]);
+            var lat2 = DegreesToRadians(coordinates2[1]);
 
-            //var a =
-            //  Math.Pow(Math.Sin(dLat / 2), 2) +
-            //  Math.Pow(Math.Sin(dLon / 2), 2) * Math.Cos(lat1) * Math.Cos(lat2);
+            var a =
+              Math.Pow(Math.Sin(dLat / 2), 2) +
+              Math.Pow(Math.Sin(dLon / 2), 2) * Math.Cos(lat1) * Math.Cos(lat2);
 
-            //return RadiansToLength(
-            //  2 * Math.Atan2(Math.Sqrt(a), Math.Sqrt(1 - a)),
-            //  units
-            //);
+            return RadiansToLength(
+              2 * Math.Atan2(Math.Sqrt(a), Math.Sqrt(1 - a)),
+             units
+            );
 
-            throw new NotImplementedException();
         }
         public static Polygon Envelope(Geometry geometry)
         {

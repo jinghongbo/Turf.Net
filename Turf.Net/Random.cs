@@ -30,7 +30,6 @@ namespace Turf.Net
 
         public static LineString[] RandomLineString(int count, Envelope bbox = null, int numVertices = 10, double maxLength = 0.0001, double maxRotation = Math.PI / 8)
         {
-
             throw new NotImplementedException();
         }
 
