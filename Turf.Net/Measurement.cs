@@ -20,7 +20,7 @@ namespace Turf.Net
                 else if (travelled >= distance)
                 {
                     var overshot = distance - travelled;
-                    if (overshot != 0)
+                    if (overshot == 0)
                     {
                         return new Point(coords[i]);
                     }
